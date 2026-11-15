@@ -1,0 +1,23 @@
+name: Fotos pelo nome no Wikidata
+
+on:
+  push:
+    branches: [main]
+    paths: ['.ferramentas/alvos-nome.json']
+
+jobs:
+  baixar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 250
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .ferramentas
+      - run: pip install --quiet pillow
+      - run: python3 .ferramentas/por_nome.py .ferramentas/alvos-nome.json saida
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fotos-por-nome
+          path: saida
+          retention-days: 30
