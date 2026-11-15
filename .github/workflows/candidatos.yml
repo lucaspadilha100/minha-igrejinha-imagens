@@ -1,0 +1,27 @@
+name: Candidatos de foto no Commons
+
+on:
+  push:
+    branches: [main]
+    paths: ['.ferramentas/alvos-candidatos.json']
+
+jobs:
+  baixar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        parte: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .ferramentas
+      - run: pip install --quiet pillow
+      - run: python3 .ferramentas/candidatos.py .ferramentas/alvos-candidatos.json saida ${{ matrix.parte }} 4
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: candidatos-${{ matrix.parte }}
+          path: saida
+          retention-days: 30
