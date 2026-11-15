@@ -54,8 +54,9 @@ def candidatos(alvo):
                 achados += [t for t in membros(sub.split(":", 1)[1], "file", 30) if IMG.search(t) and not EVITAR.search(t)]
                 if len(achados) >= 6: break
     if len(achados) < 2:
-        for nome in nomes[:3]:
-            r = api(C, action="query", list="search", srsearch=f'"{nome}"', srnamespace="6", srlimit="10")
+        buscas = [f'"{n}"' for n in nomes[:4]] + ([f"{n} filetype:bitmap" for n in nomes[:3]] if alvo.get("solto") else [])
+        for b in buscas:
+            r = api(C, action="query", list="search", srsearch=b, srnamespace="6", srlimit="10")
             achados += [x["title"] for x in r.get("query", {}).get("search", []) if IMG.search(x["title"]) and not EVITAR.search(x["title"])]
             if len(achados) >= 3: break
     vistos, lista = set(), []
